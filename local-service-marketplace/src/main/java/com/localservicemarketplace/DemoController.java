@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
 
     @GetMapping
-    @RolesAllowed({"market-place-admin"})
+    @PreAuthorize("hasAuthority('app-admin')")
     public String hello() {
         return "Hello from Spring boot & Keycloak";
     }
