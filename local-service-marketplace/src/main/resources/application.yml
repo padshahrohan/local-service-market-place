@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/market-place
+          issuer-uri: http://localhost:8080/realms/local-service-market-place
 
 cors:
   allowed-origins: http://localhost:4200
