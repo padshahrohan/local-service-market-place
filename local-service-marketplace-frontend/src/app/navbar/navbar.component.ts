@@ -1,44 +1,40 @@
 import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthErrorEvent, OAuthService } from 'angular-oauth2-oidc';
 import { authCodeFlowConfig } from '../config';
 import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
+import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit {
 
-    name: string ="";
+  name: string = "";
 
-    constructor( private oauthService: OAuthService){
+  token: any;
 
+  constructor(private router: Router, private keycloakService: KeycloakService) { }
+
+  async ngOnInit() {
+    let loggedIn = await this.keycloakService.isLoggedIn();
+    if (loggedIn) {
+      let token = await this.keycloakService.getToken();
+      this.token = token;
     }
+  }
 
-    ngOnInit(): void {
-      this.configureSingleSignOn();
-      const userClaim: any=this.oauthService.getIdentityClaims();
-      this.name=userClaim.name ? userClaim.name:null;
-    }
+  async login() {
+    await this.keycloakService.login();
+    let user = await this.keycloakService.loadUserProfile();
+    console.log(user); 
+    this.router.navigate(['navbar'], {skipLocationChange : true});
+  }
 
-    configureSingleSignOn(){
-      this.oauthService.configure(authCodeFlowConfig)
-      this.oauthService.tokenValidationHandler= new JwksValidationHandler();
-      this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    }
+  logout() {
+    this.keycloakService.logout();
+  }
 
-    login(){
-      this.oauthService.initCodeFlow();
-    }
-
-    logout(){
-      this.oauthService.logOut();
-    }
-
-    get token(){
-      let claims: any=this.oauthService.getIdentityClaims();
-      return claims ? claims:null;
-    }
 }
-
