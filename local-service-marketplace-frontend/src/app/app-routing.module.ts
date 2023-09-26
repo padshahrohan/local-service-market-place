@@ -19,6 +19,10 @@ const routes: Routes = [
     path:'navbar',
     component: NavbarComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path:'welcome',
+    component: WelcomeComponent
   }
 ];
 

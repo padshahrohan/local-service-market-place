@@ -12,7 +12,7 @@ import { KeycloakService } from 'keycloak-angular';
 })
 export class NavbarComponent implements OnInit {
 
-  name: string = "";
+  name: any;
 
   token: any;
 
@@ -23,18 +23,21 @@ export class NavbarComponent implements OnInit {
     if (loggedIn) {
       let token = await this.keycloakService.getToken();
       this.token = token;
+      
+      let user = await this.keycloakService.loadUserProfile();
+      this.name=user.username;
+   
     }
   }
 
   async login() {
-    await this.keycloakService.login();
-    let user = await this.keycloakService.loadUserProfile();
-    console.log(user); 
-    this.router.navigate(['navbar'], {skipLocationChange : true});
+    this.keycloakService.login();
   }
 
-  logout() {
-    this.keycloakService.logout();
+  async logout() {
+    await this.keycloakService.logout().then(()=> {
+      this.router.navigate(['welcome']);
+    });
   }
 
 }
